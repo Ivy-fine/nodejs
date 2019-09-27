@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <h4>收货地址</h4>
+        <ul id="list">
+            <!-- <li>
+                <table>
+                    <tr>
+                        <td>李四</td>
+                        <td>154****4567</td>
+                        <td><a href="">删除</a></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p>北京 北京市 昌平区 沙河镇</p>
+                            <p>沙河（地铁站）</p>
+                            <span class="bj">&gt;</span>
+                        </td>
+                    </tr>
+                </table>
+            </li> -->
+        </ul>
+        <div class="add" id="add">新建地址</div>
+    </div>
+</body>
+<script src="./js/ajax.js"></script>
+<script>
+    ajax.get({
+        url: "/getList"
+    }).then(res => {
+        render(list, res)
+    })
+    add.onclick = () => {
+        window.location.href = "./add.html"
+    }
+    list.onclick = (e) => {
+        let tag = e.target;
+        if (tag.className === "bj") {
+            window.location.href = "./update.html?id=" + tag.dataset.id
+        }
+        if (tag.className === "del") {
+            dialog(() => {
+                ajax.get({
+                    url: "/removeInfo?id=" + tag.dataset.id
+                }).then(res => {
+                    // if (res.code == 0) {
+                    //     window.location.reload();
+                    // }
+                    render(list, res.data)
+                })
+            })
+        }
+    }
+
+    function render(el, data) {
+        let bstr = "";
+        el.innerHTML = data.map(item => {
+            if (item.isDefault == "true") {
+                bstr = `<b>[默认]</b>`;
+            } else {
+                bstr = "";
+            }
+            return `<li>
+        <table>
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.tel} ${bstr}</td>
+                <td><a class="del" data-id=${item.id}>删除</a></td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <p>${item.area}</p>
+                    <p>${item.address}</p>
+                    <span class="bj" data-id=${item.id}>&gt;</span>
+                </td>
+            </tr>
+        </table>
+    </li>`
+        }).join("");
+    }
+
+    function dialog(callback) {
+        let dialog = document.createElement("div");
+        dialog.className = "mark";
+        dialog.innerHTML = `
+        <div class="dialog">
+            <h4>提示</h4>
+            <p>确认删除当前地址？</p>
+            <button id="cancel">取消</button><button id="ok">确认</button>
+    </div>`
+        document.body.appendChild(dialog);
+        cancel.onclick = () => {
+            document.body.removeChild(cancel.parentNode.parentNode);
+        }
+        ok.onclick = () => {
+            callback();
+            document.body.removeChild(cancel.parentNode.parentNode);
+        }
+    }
+</script>
+
+</html>

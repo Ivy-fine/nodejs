@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/add.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <h4>编辑地址</h4>
+        <div class="content">
+            <p><label for="">收货人：</label>
+                <input type="text" placeholder="真实姓名" id="nameipt"></p>
+            <p><label for="">手机号码：</label>
+                <input type="text" placeholder="手机号" id="telipt" disabled></p>
+            <p><label for="">所在地区：</label>
+                <input type="text" placeholder="省 市 区 街道信息" id="areaipt"></p>
+            <p><label for="">详细地址：</label>
+                <input type="text" placeholder="详细地址" id="addressipt"></p>
+            <p>设为默认地址 <input type="checkbox" id="df"></p>
+        </div>
+        <div class="save" id="save">保存地址</div>
+    </div>
+</body>
+
+</html>
+<script src="./js/ajax.js"></script>
+<script>
+    let str = location.search.slice(1);
+
+    function parse(str) {
+        let obj = {};
+        str.split("&").forEach(item => {
+            let arr = item.split("=");
+            obj[arr[0]] = arr[1];
+        })
+        return obj;
+    }
+    ajax.get({
+        url: "/getList?id=" + parse(str).id
+    }).then(res => {
+        nameipt.value = res.name;
+        telipt.value = res.tel;
+        areaipt.value = res.area;
+        addressipt.value = res.address;
+        if (res.isDefault == "true") {
+            df.checked = true;
+        }
+    })
+    save.onclick = () => {
+        ajax.post({
+            url: "/updateInfo",
+            params: {
+                id: parse(str).id,
+                name: nameipt.value,
+                tel: telipt.value,
+                area: areaipt.value,
+                address: addressipt.value,
+                isDefault: df.checked
+            }
+        }).then(res => {
+            alert(res.msg)
+            if (res.code == 0) {
+                window.location.href = "./index.html"
+            }
+        })
+    }
+</script>

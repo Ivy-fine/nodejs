@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="left">
+            <ul>
+            </ul>
+        </div>
+        <div class="right">
+            <div class="nav">
+                <ul>
+                </ul>
+            </div>
+            <div class="list">
+            </div>
+        </div>
+    </div>
+    <script src="./js/ajax.js"></script>
+    <script>
+        let lt = document.querySelector(".left ul");
+        let rtnav = document.querySelector(".right .nav ul");
+        let rlist = document.querySelector(".right .list");
+        let set = 0;
+        async function getData(m = 0, n = 0) {
+            let ltinit = await ajax.get({
+                url: '/flist'
+            })
+            let rtnavinit = await ajax.get({
+                url: `/slist?m=${m}`,
+
+            })
+            let rlistinit = await ajax.get({
+                url: `/tlist?m=${m}&n=${n}`,
+            })
+            render(ltinit, lt);
+            render(rtnavinit, rtnav);
+            render(rlistinit, rlist)
+
+            let lts = [...lt.children];
+            let rtnavs = [...rtnav.children];
+            lts[m].classList.add("active");
+            rtnavs[n].classList.add("active");
+            lts.forEach((item, index) => {
+                item.onclick = () => {
+                    set = index;
+                    getData(index, 0)
+                }
+            })
+            rtnavs.forEach((item, index) => {
+                item.onclick = () => {
+                    getData(set, index)
+                }
+            })
+        }
+        getData();
+
+        function render(data, el) {
+            el.innerHTML = data.map(item => {
+                return `<li>${item}</li>`
+            }).join("")
+        }
+    </script>
+</body>
+
+</html>

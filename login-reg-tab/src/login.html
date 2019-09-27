@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/formstyle.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <form>
+            <input type="text" placeholder="请输入用户名" id="useript">
+            <input type="password" placeholder="请输入密码" id="pwdipt">
+            <button id="logbtn">登陆</button>
+            <button id="regbtn">没有帐号请注册~</button>
+        </form>
+    </div>
+    <script src="./js/ajax.js"></script>
+    <script>
+        logbtn.onclick = () => {
+            ajax.get({
+                url: `/log?name=${useript.value}&pwd=${pwdipt.value}`
+            }).then(res => {
+                alert(res.msg);
+                if (res.code == 1) {
+                    window.location.href = "index.html";
+                }
+            })
+        }
+
+        regbtn.onclick = (e) => {
+            e.preventDefault();
+            window.location.href = "register.html";
+        }
+    </script>
+</body>
+
+</html>

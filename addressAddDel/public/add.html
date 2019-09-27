@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/add.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <h4>新增地址</h4>
+        <div class="content">
+            <p><label for="">收货人：</label>
+                <input type="text" placeholder="真实姓名" id="nameipt"></p>
+            <p><label for="">手机号码：</label>
+                <input type="text" placeholder="手机号" id="telipt"></p>
+            <p><label for="">所在地区：</label>
+                <input type="text" placeholder="省 市 区 街道信息" id="areaipt"></p>
+            <p><label for="">详细地址：</label>
+                <input type="text" placeholder="详细地址" id="addressipt"></p>
+            <p>设为默认地址 <input type="checkbox" id="df"></p>
+        </div>
+        <div class="save" id="save">保存地址</div>
+    </div>
+</body>
+
+</html>
+<script src="./js/ajax.js"></script>
+<script>
+    save.onclick = () => {
+        ajax.post({
+            url: "/addInfo",
+            params: {
+                name: nameipt.value,
+                tel: telipt.value,
+                area: areaipt.value,
+                address: addressipt.value,
+                isDefault: df.checked
+            }
+        }).then(res => {
+            if (res.code == 0) {
+                window.location.href = "./index.html"
+            }
+        })
+    }
+</script>

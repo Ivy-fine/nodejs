@@ -1,0 +1,57 @@
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+html,
+body,
+.wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper h4 {
+    text-align: center;
+    line-height: 40px;
+    font-size: 14px;
+    background: #eee;
+}
+
+.wrapper .content {
+    padding-top: 10px;
+    flex: 1;
+}
+
+.wrapper .content p {
+    padding-left: 15px;
+    font-size: 14px;
+    line-height: 40px;
+}
+
+.wrapper .content p input {
+    line-height: 40px;
+    border: none;
+    padding-left: 10px;
+    outline: none;
+}
+
+.wrapper .content p #df {
+    float: right;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+.wrapper .save {
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: #fff;
+    background: #f90;
+}

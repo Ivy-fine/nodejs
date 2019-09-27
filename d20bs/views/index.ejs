@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="nav">
+            <ul id="title">
+                <li class="active" data-type="hot">hot</li>
+                <li data-type="coming">coming</li>
+            </ul>
+        </div>
+        <div class="search">
+            <input type="text" id="ipt" placeholder="搜索">
+        </div>
+        <div class="content">
+            <div class="innerbox">
+                <p class="pulldown" id="pd">下拉刷新</p>
+                <ul id="list">
+                    <%data.slice(0, 5).map(item=>{%>
+                        <li>
+                            <%=item.nm%> <br><span><%=item.wish%> 人想看</span>
+                                <p>
+                                    主演：
+                                    <%=item.star%>
+                                </p>
+                                <p class="showinfo">
+                                    <%=item.showInfo%>
+                                </p>
+                        </li>
+                        <%})%>
+                </ul>
+                <p class="pullup" id="pu">上拉加载</p>
+            </div>
+
+        </div>
+        <div class="more">
+            <button id="sort">排序</button>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="./js/bscroll.min.js"></script>
+<script src="./js/ajax.js"></script>
+<script>
+    let page = 1,
+        limit = 5,
+        total;
+    localStorage.setItem("type", "hot");
+    title.onclick = (e) => {
+        let tag = e.target;
+        if (tag.nodeName === "LI") {
+            title.querySelector(".active").classList.remove("active");
+            tag.classList.add("active");
+            page = 1;
+            getData(tag.dataset.type).then(res => {
+                list.innerHTML = render(res.data);
+                localStorage.setItem("type", tag.dataset.type)
+            })
+        }
+    }
+
+    function getData(type, sortype) {
+        return ajax.get({
+            url: "/getData",
+            params: {
+                type,
+                page,
+                limit,
+                sortype
+            }
+        })
+    }
+
+    function render(data) {
+        return data.map(item => ` <li>
+                        ${item.nm}<br><span>${item.wish} 人想看</span><p>
+                                主演：
+                                ${item.star}
+                            </p> 
+                            <p class="showinfo">
+                                ${item.showInfo}
+                            </p>
+                    </li>`).join("")
+    }
+
+    let bs = new BScroll(".content", {
+        probeType: 2,
+        click: true
+    });
+
+    bs.on("scroll", onScroll);
+    bs.on("scrollEnd", onScrollEnd);
+
+    function onScroll() {
+        if (bs.y > pd.offsetHeight) {
+            pd.innerHTML = "释放刷新"
+            pd.setAttribute("flag", true);
+        } else {
+            pd.innerHTML = "下拉刷新"
+            pd.removeAttribute("flag");
+        }
+        if (bs.y < bs.maxScrollY - 80) {
+            if (page >= total) {
+                pu.innerHTML = "没有更多数据了"
+                pu.removeAttribute("flag");
+            } else {
+                pu.innerHTML = "释放加载"
+                pu.setAttribute("flag", true);
+            }
+        } else {
+            if (page >= total) {
+                pu.innerHTML = "没有更多数据了"
+                pu.removeAttribute("flag");
+            } else {
+                pu.innerHTML = "上拉加载"
+                pu.removeAttribute("flag");
+            }
+        }
+    }
+
+    function onScrollEnd() {
+        if (pd.getAttribute("flag")) {
+            location.reload();
+        }
+        if (pu.getAttribute("flag")) {
+            page++;
+            getData(localStorage.getItem("type")).then(res => {
+                total = res.total;
+                list.innerHTML += render(res.data);
+                let pos = bs.maxScrollY - 80;
+                bs.refresh();
+                bs.scrollTo(0, pos, 0)
+            })
+        }
+    }
+    ipt.oninput = () => {
+        if (ipt.value == "") {
+            page = 1;
+            getData(localStorage.getItem("type")).then(res => {
+                list.innerHTML = render(res.data);
+            })
+        } else {
+            ajax.get({
+                url: "/search?val=" + ipt.value
+            }).then(res => {
+                list.innerHTML = render(res);
+            })
+        }
+
+    }
+    sort.onclick = () => {
+        page = 1;
+        getData(localStorage.getItem("type"), "wish").then(res => {
+            list.innerHTML = render(res.data);
+        })
+    }
+</script>
